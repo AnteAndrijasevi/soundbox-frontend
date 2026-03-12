@@ -16,7 +16,7 @@ export const auth = {
 };
 
 export const albums = {
-    search: (query, limit = 10) => API.get(`/api/albums/search?query=${query}&limit=${limit}`),
+    search: (query, limit = 5) => API.get(`/api/albums/search?query=${query}&limit=${limit}`),
     get: (mbid) => API.get(`/api/albums/${mbid}`),
     review: (mbid, rating, text) => API.post(`/api/albums/${mbid}/reviews`, { rating, text }),
     log: (mbid, data) => API.post(`/api/albums/${mbid}/log`, data),
