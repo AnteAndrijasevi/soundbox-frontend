@@ -20,6 +20,7 @@ export const albums = {
     get: (mbid) => API.get(`/api/albums/${mbid}`),
     review: (mbid, rating, text) => API.post(`/api/albums/${mbid}/reviews`, { rating, text }),
     log: (mbid, data) => API.post(`/api/albums/${mbid}/log`, data),
+    newReleases: (limit = 6) => API.get(`/api/albums/new-releases?limit=${limit}`),
 };
 
 export const users = {
@@ -27,6 +28,7 @@ export const users = {
     profile: (id) => API.get(`/api/users/${id}`),
     reviews: (id) => API.get(`/api/users/${id}/reviews`),
     log: (id) => API.get(`/api/users/${id}/log`),
+    myLog: () => API.get('/api/users/me/log'),
 };
 
 export default API;
