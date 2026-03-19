@@ -29,6 +29,10 @@ export const users = {
     reviews: (id) => API.get(`/api/users/${id}/reviews`),
     log: (id) => API.get(`/api/users/${id}/log`),
     myLog: () => API.get('/api/users/me/log'),
+    search: (query) => API.get(`/api/users/search?query=${query}`),
+    follow: (userId) => API.post(`/api/users/${userId}/follow`),
+    publicProfile: (userId) => API.get(`/api/users/${userId}`),
+    publicLog: (userId) => API.get(`/api/users/${userId}/log`),
 };
 
 export default API;

@@ -5,6 +5,9 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import Search from './pages/Search';
 import Profile from './pages/Profile';
+import PublicProfile from './pages/PublicProfile';
+import Feed from './pages/Feed';
+
 
 function App() {
   const token = localStorage.getItem('token');
@@ -17,6 +20,9 @@ function App() {
           <Route path="/" element={token ? <Home /> : <Navigate to="/login" />} />
           <Route path="/search" element={token ? <Search /> : <Navigate to="/login" />} />
           <Route path="/profile" element={token ? <Profile /> : <Navigate to="/login" />} />
+            <Route path="/users/:userId" element={<PublicProfile />} />
+            <Route path="/feed" element={<Feed />} />
+
         </Routes>
       </BrowserRouter>
   );
