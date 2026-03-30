@@ -7,6 +7,8 @@ import Search from './pages/Search';
 import Profile from './pages/Profile';
 import PublicProfile from './pages/PublicProfile';
 import Feed from './pages/Feed';
+import AlbumDetail from './pages/AlbumDetail';
+
 
 
 function App() {
@@ -22,6 +24,8 @@ function App() {
           <Route path="/profile" element={token ? <Profile /> : <Navigate to="/login" />} />
             <Route path="/users/:userId" element={<PublicProfile />} />
             <Route path="/feed" element={<Feed />} />
+            <Route path="/albums/:mbid" element={<AlbumDetail />} />
+
 
         </Routes>
       </BrowserRouter>

@@ -137,7 +137,7 @@ function Home() {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '16px' }}>
                             {newReleases.map(album => (
                                 <div key={album.mbid}
-                                     onClick={() => setLogModal(album)}
+                                     onClick={() => navigate(`/albums/${album.mbid}`)}
                                      style={{ cursor: 'pointer' }}>
                                     <div style={{
                                         width: '100%', aspectRatio: '1', borderRadius: '4px',

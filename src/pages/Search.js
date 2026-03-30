@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { albums } from '../services/api';
 
@@ -9,8 +10,7 @@ function Search() {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [logModal, setLogModal] = useState(null);
-    const [logData, setLogData] = useState({ rating: '', mood: '', context: '', isFirstListen: false, note: '', favoriteTrack: '' });
+    const navigate = useNavigate();
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -34,31 +34,10 @@ function Search() {
         }
         setLoading(false);
     };
-    const handleLog = async () => {
-        try {
-            await albums.log(logModal.mbid, {
-                rating: logData.rating ? parseFloat(logData.rating) : null,
-                mood: logData.mood || null,
-                context: logData.context || null,
-                isFirstListen: logData.isFirstListen || null,
-                note: logData.note || null,
-                favoriteTrack: logData.favoriteTrack || null,
-            });
-            setLogModal(null);
-            setLogData({ rating: '', mood: '', context: '', isFirstListen: false, note: '', favoriteTrack: '' });
-            alert('Logged!');
-        } catch (err) {
-            alert('Error logging listen.');
-        }
-    };
 
     const inputStyle = {
         width: '100%', padding: '10px 14px', border: '1px solid #ddd',
         borderRadius: '4px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', outline: 'none'
-    };
-
-    const selectStyle = {
-        ...inputStyle, background: '#fff', cursor: 'pointer'
     };
 
     return (
@@ -88,11 +67,20 @@ function Search() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '24px' }}>
                     {results.map(album => (
                         <div key={album.mbid} style={{ cursor: 'pointer' }}
-                             onClick={() => setLogModal(album)}>
+                             onClick={() => navigate(`/albums/${album.mbid}`)}>
                             <div style={{
                                 width: '100%', aspectRatio: '1', background: '#f5f5f5',
-                                borderRadius: '4px', overflow: 'hidden', marginBottom: '8px'
-                            }}>
+                                borderRadius: '4px', overflow: 'hidden', marginBottom: '8px',
+                                transition: 'transform 0.2s, box-shadow 0.2s'
+                            }}
+                                 onMouseEnter={e => {
+                                     e.currentTarget.style.transform = 'translateY(-2px)';
+                                     e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
+                                 }}
+                                 onMouseLeave={e => {
+                                     e.currentTarget.style.transform = 'translateY(0)';
+                                     e.currentTarget.style.boxShadow = 'none';
+                                 }}>
                                 {album.coverArtUrl ? (
                                     <img src={album.coverArtUrl} alt={album.title}
                                          style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -110,75 +98,6 @@ function Search() {
                 </div>
 
             </div>
-
-            {logModal && (
-                <div style={{
-                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200
-                }}>
-                    <div style={{
-                        background: '#fff', borderRadius: '8px', padding: '32px',
-                        width: '100%', maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto'
-                    }}>
-                        <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
-                            {logModal.coverArtUrl && (
-                                <img src={logModal.coverArtUrl} alt={logModal.title}
-                                     style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: '4px' }} />
-                            )}
-                            <div>
-                                <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>{logModal.title}</h3>
-                                <p style={{ color: '#666', fontSize: '0.9rem' }}>{logModal.artist}</p>
-                            </div>
-                        </div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <input type="number" placeholder="Rating (0.5 - 5.0)" min="0.5" max="5" step="0.5"
-                                   value={logData.rating} onChange={e => setLogData({ ...logData, rating: e.target.value })}
-                                   style={inputStyle} />
-
-                            <select value={logData.mood} onChange={e => setLogData({ ...logData, mood: e.target.value })} style={selectStyle}>
-                                <option value="">Mood (optional)</option>
-                                {MOODS.map(m => <option key={m} value={m}>{m.charAt(0) + m.slice(1).toLowerCase()}</option>)}
-                            </select>
-
-                            <select value={logData.context} onChange={e => setLogData({ ...logData, context: e.target.value })} style={selectStyle}>
-                                <option value="">Context (optional)</option>
-                                {CONTEXTS.map(c => <option key={c} value={c}>{c.charAt(0) + c.slice(1).toLowerCase()}</option>)}
-                            </select>
-
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer' }}>
-                                <input type="checkbox" checked={logData.isFirstListen}
-                                       onChange={e => setLogData({ ...logData, isFirstListen: e.target.checked })} />
-                                First listen
-                            </label>
-
-                            <input type="text" placeholder="Favorite track (optional)"
-                                   value={logData.favoriteTrack} onChange={e => setLogData({ ...logData, favoriteTrack: e.target.value })}
-                                   style={inputStyle} />
-
-                            <textarea placeholder="Note (optional) — where were you, how did it feel..."
-                                      value={logData.note} onChange={e => setLogData({ ...logData, note: e.target.value })}
-                                      rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-                            <button onClick={handleLog} style={{
-                                flex: 1, padding: '12px', background: '#111', color: '#fff',
-                                border: 'none', borderRadius: '4px', cursor: 'pointer',
-                                fontFamily: 'Inter, sans-serif', fontSize: '0.95rem'
-                            }}>
-                                Log listen
-                            </button>
-                            <button onClick={() => setLogModal(null)} style={{
-                                padding: '12px 20px', background: 'none', border: '1px solid #ddd',
-                                borderRadius: '4px', cursor: 'pointer', fontFamily: 'Inter, sans-serif'
-                            }}>
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
